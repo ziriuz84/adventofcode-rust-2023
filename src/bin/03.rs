@@ -12,7 +12,6 @@ pub struct Number {
 pub struct Symbol {
     x_coord: u32,
     y_coord: u32,
-    value: char,
 }
 
 pub fn populate_number_vec<'a>(vec: &'a mut Vec<Number>, row: usize, input: &str) {
@@ -54,37 +53,19 @@ pub fn populate_number_vec<'a>(vec: &'a mut Vec<Number>, row: usize, input: &str
 }
 
 pub fn populate_symbol_vec<'a>(vec: &'a mut Vec<Symbol>, row: usize, input: &str) {
-    let input_text = input
-        .replace('!', ",!,")
-        .replace('@', ",@,")
-        .replace('/', ",/,")
-        .replace('|', ",|,")
-        .replace('\\', ",\\,")
-        .replace('$', ",$,")
-        .replace('%', ",%,")
-        .replace('^', ",^,")
-        .replace('&', ",&,")
-        .replace('*', ",*,")
-        .replace('(', ",(,")
-        .replace(')', ",),")
-        .replace('+', ",+,")
-        .replace('=', ",=,")
-        .replace('-', ",-,")
-        .replace('.', ",.,")
-        .replace('#', ",#,");
-    //println!("{}", input_text);
-    let mut text: Vec<&str> = input_text.split(',').collect();
-    text.retain(|s| !s.is_empty() && !s.contains('.'));
-    for item in text {
-        if !item.is_empty() && item.chars().all(|c| !c.is_alphanumeric()) {
-            let symbol: Symbol = Symbol {
-                y_coord: row as u32,
-                x_coord: input.find(item).unwrap() as u32,
-                value: item.parse::<char>().unwrap(),
-            };
-            println!("{:?}", symbol);
-            vec.push(symbol);
-        }
+    let positions: Vec<usize> = input
+        .chars()
+        .enumerate()
+        .filter(|&(_, c)| c != '.' && !c.is_alphanumeric())
+        .map(|(idx, _)| idx)
+        .collect();
+    for p in positions {
+        let symbol: Symbol = Symbol {
+            y_coord: row as u32,
+            x_coord: p as u32,
+        };
+        println!("{:?}", symbol);
+        vec.push(symbol)
     }
 }
 
@@ -94,51 +75,15 @@ pub fn part_one(input: &str) -> Option<u32> {
     let mut numbers: Vec<Number> = Vec::new();
     let mut symbols: Vec<Symbol> = Vec::new();
     let mut row: usize = 0;
-    let mut string_len = 0;
     for text in &splitted_input {
         println!("{}", text);
         populate_number_vec(&mut numbers, row, text);
         populate_symbol_vec(&mut symbols, row, text);
         row += 1;
-        string_len = text.len();
     }
-    /*
-    for n in &numbers {
-        let mut l_limit: u32 = 0;
-        if n.x_coord != 0 {
-            l_limit = n.x_coord - 1;
-        }
-        let mut r_limit: u32 = string_len as u32;
-        if n.x_coord != string_len as u32 {
-            r_limit = n.x_coord + n.length;
-        }
-        let coords = [l_limit, r_limit];
-        println!("{}", n.y_coord);
-        println!("{:?}", coords);
-        let full_coords = l_limit..r_limit;
-        println!("{:?}", full_coords);
-        for s in &symbols {
-            println!("{:?}", s);
-            if (s.y_coord == n.y_coord && coords.contains(&s.x_coord))
-                || (s.y_coord != splitted_input.len() as u32
-                    && s.y_coord + 1 == n.y_coord
-                    && full_coords.contains(&s.x_coord))
-                || (s.y_coord != 0
-                    && s.y_coord - 1 == n.y_coord
-                    && full_coords.contains(&s.x_coord))
-            {
-                println!("{:?}", n);
-                println!("{:?}", s);
-                println!("{}", n.value);
-                sum += n.value;
-            }
-        }
-    }
-        */
     //println!("{:?}", numbers);
     //println!("{:?}", symbols);
     for s in &symbols {
-        println!("{:?}", s);
         for n in &numbers {
             //println!("{}", n.value);
             if n.y_coord == s.y_coord {
@@ -146,28 +91,31 @@ pub fn part_one(input: &str) -> Option<u32> {
                     println!("Found a");
                     //println!("{:?}", n);
                     //println!("{:?}", s);
+                    //println!("{} {}+{}", s.x_coord, n.x_coord, n.length);
+                    //println!("{} {}", s.y_coord, n.y_coord);
                     println!("{}", n.value);
                     sum += n.value;
                 }
                 if n.x_coord == s.x_coord + 1 {
+                    //println!("{} {}+{}", s.x_coord, n.x_coord, n.length);
+                    //println!("{} {}", s.y_coord, n.y_coord);
                     println!("Found b");
                     //println!("{:?}", n);
                     //println!("{:?}", s);
                     println!("{}", n.value);
                     sum += n.value;
                 }
-            } else if (s.y_coord != splitted_input.len() as u32 && n.y_coord == s.y_coord + 1)
-                || (s.y_coord != 0 && n.y_coord == s.y_coord - 1)
+            } else if ((s.y_coord != splitted_input.len() as u32 && n.y_coord == s.y_coord + 1)
+                || (s.y_coord != 0 && n.y_coord == s.y_coord - 1))
+                && (n.x_coord <= s.x_coord + 1 && n.x_coord + n.length >= s.x_coord)
             {
-                if n.x_coord <= s.x_coord + 1 && n.x_coord + n.length >= s.x_coord {
-                    //println!("{} {}+{}", s.x_coord, n.x_coord, n.length);
-                    //println!("{} {}", s.y_coord, n.y_coord);
-                    println!("Found c");
-                    //println!("{:?}", n);
-                    //println!("{:?}", s);
-                    println!("{}", n.value);
-                    sum += n.value;
-                }
+                //println!("{} {}+{}", s.x_coord, n.x_coord, n.length);
+                //println!("{} {}", s.y_coord, n.y_coord);
+                println!("Found c");
+                //println!("{:?}", n);
+                //println!("{:?}", s);
+                println!("{}", n.value);
+                sum += n.value;
             }
         }
     }
