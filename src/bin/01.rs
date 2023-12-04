@@ -11,8 +11,8 @@ pub fn part_one(input: &str) -> Option<u32> {
                 numbers.push(c);
             }
         }
-        let string: String = format!("{}{}", numbers[0], numbers.last().unwrap());
-        sum += string.parse::<u32>().unwrap();
+        //let string: String = format!("{}{}", numbers[0], numbers.last().unwrap());
+        //sum += string.parse::<u32>().unwrap();
     }
     Some(sum)
 }
@@ -24,17 +24,21 @@ pub fn part_two(input: &str) -> Option<u32> {
         let mut numbers = Vec::new();
         let mut positions = Vec::new();
         let mut new_text = text.to_string();
-
-        let words = [
-            "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine",
-        ];
-        for (i, word) in words.iter().enumerate() {
-            while let Some(start) = new_text.find(word) {
-                numbers.push((i as u32).to_string());
-                positions.push(start);
-                new_text.remove(start + 1);
-            }
-        }
+        new_text = new_text
+            .replace("one", "one1one")
+            .replace("two", "two2two")
+            .replace("three", "three3three")
+            .replace("four", "four4four")
+            .replace("five", "five5five")
+            .replace("six", "six6six")
+            .replace("seven", "seven7seven")
+            .replace("eight", "eight8eight")
+            .replace("nine", "nine9nine")
+            .chars()
+            .filter(|c| c.is_digit(10))
+            .collect();
+        println!("{}", text);
+        println!("{}", new_text);
         let digits = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
         for (i, digit) in digits.iter().enumerate() {
             while let Some(start) = new_text.find(digit) {
@@ -53,9 +57,8 @@ pub fn part_two(input: &str) -> Option<u32> {
             println!("posizione vuota");
         } else {
             string = format!("{}{}", ordered_numbers[0], ordered_numbers.last().unwrap());
-            //println!("{}", string);
         }
-        //println!("{:?}\n{}", text, string);
+        println!("{}", string);
         sum += string.parse::<u32>().unwrap();
     }
     Some(sum)
