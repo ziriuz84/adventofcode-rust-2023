@@ -74,8 +74,8 @@ pub fn get_total_cards(
     cards: &[Card],
     card: &Card,
     starting_number: usize,
-    mut total_cards: Vec<Card>,
-) -> Vec<Card> {
+    total_cards: &mut Vec<Card>,
+) {
     /*
     cards
         .iter()
@@ -88,17 +88,16 @@ pub fn get_total_cards(
     for i in start_index..=single_total_card + 1 {
         //if i < cards.len() {
         let actual_card: Card = cards[i].clone();
+        let temp_card: Card = cards[i].clone();
         let total_card_copy = total_cards.clone();
-        let mut temp_cards: Vec<Card> = get_total_cards(&cards, &actual_card, i, total_card_copy);
-        total_cards.append(&mut temp_cards)
+        &total_cards.push(temp_card);
+        get_total_cards(&cards, &actual_card, i, &total_card_copy);
         //}
     }
-    total_cards
 }
 
 pub fn part_two(input: &str) -> Option<u32> {
     let splitted_input: Vec<&str> = input.lines().collect();
-    let mut sum: u32 = 0;
     let mut cards: Vec<Card> = Vec::new();
     for item in splitted_input {
         let text = item.replace("   ", " ").replace("  ", " ");
@@ -109,10 +108,8 @@ pub fn part_two(input: &str) -> Option<u32> {
     //println!("{:?}", cards);
     //println!("{:?}", cards[1]);
     let mut total_cards: Vec<Card> = Vec::new();
-    let total_cards = get_total_cards(&cards, &cards[0], 0, total_cards);
-    cards.extend(total_cards);
-    println!("{:?}", cards);
-    Some(cards.len() as u32)
+    get_total_cards(&cards, &cards[0], 0, &total_cards);
+    Some(total_cards.len() as u32)
 }
 
 #[cfg(test)]
