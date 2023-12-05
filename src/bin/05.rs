@@ -1,5 +1,13 @@
 advent_of_code::solution!(5);
 
+pub struct Map {
+    destination_start: u32,
+    source_start: u32,
+    length: u32,
+    destination_range: Vec<u32>,
+    source_range: Vec<u32>,
+}
+
 pub fn part_one(input: &str) -> Option<u32> {
     let splitted_input: Vec<&str> = input.split("\n\n").collect();
     println!("{:?}", splitted_input);
