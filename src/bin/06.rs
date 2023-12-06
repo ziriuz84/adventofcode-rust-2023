@@ -1,3 +1,5 @@
+use std::task::Wake;
+
 advent_of_code::solution!(6);
 
 #[derive(Debug)]
@@ -50,8 +52,26 @@ pub fn part_one(input: &str) -> Option<u32> {
     Some(result)
 }
 
-pub fn part_two(input: &str) -> Option<u32> {
-    None
+pub fn part_two(input: &str) -> Option<u64> {
+    let splitted_input: Vec<&str> = input.lines().collect();
+    let temp_time = splitted_input[0].replace(' ', "");
+    let time_splitted: Vec<&str> = temp_time.split(':').collect();
+    let time: u64 = time_splitted[1].parse::<u64>().unwrap();
+    let temp_distance = splitted_input[1].replace(' ', "");
+    let distance_splitted: Vec<&str> = temp_distance.split(':').collect();
+    let distance: u64 = distance_splitted[1].parse::<u64>().unwrap();
+    let mut races = Vec::new();
+    for j in 0..time {
+        races.push((time - j) * j);
+    }
+    let mut sum = 0;
+    for race in races {
+        if race > distance {
+            sum += 1;
+        }
+    }
+
+    Some(sum)
 }
 
 #[cfg(test)]
