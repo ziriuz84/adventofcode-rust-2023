@@ -1,6 +1,15 @@
+use grid::*;
 advent_of_code::solution!(10);
 
+fn parse_input(input: &str) -> Grid<char> {
+    let start_value: Vec<Vec<char>> = input.lines().map(|line| line.chars().collect()).collect();
+    let col_size = start_value[0].len();
+    Grid::from_vec(start_value.into_iter().flatten().collect(), col_size)
+}
+
 pub fn part_one(input: &str) -> Option<u32> {
+    let grid = parse_input(input);
+    println!("{:?}", grid);
     None
 }
 
