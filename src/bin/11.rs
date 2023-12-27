@@ -1,9 +1,10 @@
+use std::cmp::{max, min};
 advent_of_code::solution!(11);
 
 #[derive(Debug, Clone)]
 struct Point {
-    x: i64,
-    y: i64,
+    x: u32,
+    y: u32,
 }
 
 fn prepare_grid(input: &str) -> Vec<Vec<char>> {
@@ -17,7 +18,7 @@ fn prepare_grid(input: &str) -> Vec<Vec<char>> {
     grid
 }
 
-fn double_rows_without_char(grid: Vec<Vec<char>>, ch: char, n_rows: i64) -> Vec<Vec<char>> {
+fn double_rows_without_char(grid: Vec<Vec<char>>, ch: char, n_rows: u32) -> Vec<Vec<char>> {
     //println!("{:?}", grid);
     let mut new_grid: Vec<Vec<char>> = Vec::new();
     for row in grid {
@@ -29,6 +30,7 @@ fn double_rows_without_char(grid: Vec<Vec<char>>, ch: char, n_rows: i64) -> Vec<
         new_grid.push(row.clone());
     }
     //println!("{:?}", new_grid);
+    println!("{} {}", new_grid.len(), new_grid[0].len());
     new_grid
 }
 
@@ -42,11 +44,12 @@ fn rotate_grid(grid: Vec<Vec<char>>) -> Vec<Vec<char>> {
             new_grid[j][number_rows - 1 - i] = grid[i][j];
         }
     }
+    println!("{} {}", new_grid.len(), new_grid[0].len());
     //println!("{:?}", new_grid);
     new_grid
 }
 
-fn double_columns_without_char(grid: Vec<Vec<char>>, ch: char, n_rows: i64) -> Vec<Vec<char>> {
+fn double_columns_without_char(grid: Vec<Vec<char>>, ch: char, n_rows: u32) -> Vec<Vec<char>> {
     //println!("{:?}", grid);
     let temp_grid: Vec<Vec<char>> = rotate_grid(grid);
     let number_rows = temp_grid.len();
@@ -62,6 +65,7 @@ fn double_columns_without_char(grid: Vec<Vec<char>>, ch: char, n_rows: i64) -> V
         new_grid.push(row.clone());
     }
     //println!("{:?}", new_grid);
+    println!("{} {}", new_grid.len(), new_grid[0].len());
     new_grid
 }
 
@@ -72,8 +76,8 @@ fn search_char(input: Vec<Vec<char>>, ch: char) -> Vec<Point> {
         for j in 0..row.len() {
             if row[j] == ch {
                 let point = Point {
-                    x: i as i64,
-                    y: j as i64,
+                    x: i as u32,
+                    y: j as u32,
                 };
                 result.push(point);
             }
@@ -82,19 +86,22 @@ fn search_char(input: Vec<Vec<char>>, ch: char) -> Vec<Point> {
     result
 }
 
-pub fn part_one(input: &str) -> Option<i64> {
+pub fn part_one(input: &str) -> Option<u32> {
     let grid = prepare_grid(input);
     let grid_rows_doubled = double_rows_without_char(grid, '#', 1);
     let final_grid = double_columns_without_char(grid_rows_doubled, '#', 1);
-    let mut sum: i64 = 0;
+    let mut sum: u32 = 0;
     let points: Vec<Point> = search_char(final_grid, '#');
     let temp_points = points.clone();
     for point in points {
         let new_points = temp_points.clone();
         for new_point in new_points {
-            let dx = new_point.x - point.x;
-            let dy = new_point.y - point.y;
-            sum += dx.abs() + dy.abs();
+            //let dx = new_point.x - point.x;
+            //let dy = new_point.y - point.y;
+            let dx = max(new_point.x, point.x) - min(new_point.x, point.x);
+            let dy = max(new_point.y, point.y) - min(new_point.y, point.y);
+            //sum += dx.abs() + dy.abs();
+            sum += dx + dy;
             //println!("{:?} -> {:?}", point, new_point);
             //println!("{} {} {}", dx, dy, sum);
         }
@@ -102,20 +109,25 @@ pub fn part_one(input: &str) -> Option<i64> {
     Some(sum / 2)
 }
 
-pub fn part_two(input: &str) -> Option<i64> {
+pub fn part_two(input: &str) -> Option<u32> {
     let grid = prepare_grid(input);
-    let grid_rows_doubled = double_rows_without_char(grid, '#', 10);
-    let final_grid = double_columns_without_char(grid_rows_doubled, '#', 10);
-    let mut sum: i64 = 0;
+    let grid_rows_doubled = double_rows_without_char(grid, '#', 1000000 - 1);
+    let final_grid = double_columns_without_char(grid_rows_doubled, '#', 1000000 - 1);
+    let mut sum: u32 = 0;
     let points: Vec<Point> = search_char(final_grid, '#');
     let temp_points = points.clone();
     println!("{}", points.len());
     for point in points {
         let new_points = temp_points.clone();
         for new_point in new_points {
-            let dx = new_point.x - point.x;
-            let dy = new_point.y - point.y;
-            sum += dx.abs() + dy.abs();
+            //let dx = new_point.x - point.x;
+            //let dy = new_point.y - point.y;
+            //sum += dx.abs() + dy.abs();
+            let dx = max(new_point.x, point.x) - min(new_point.x, point.x);
+            let dy = max(new_point.y, point.y) - min(new_point.y, point.y);
+            sum += dx + dy;
+            println!("{:?} -> {:?}", point, new_point);
+            println!("{} {} {}", dx, dy, sum);
         }
     }
     Some(sum / 2)
