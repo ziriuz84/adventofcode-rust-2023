@@ -95,12 +95,13 @@ fn parse_input(input: &str) -> Map {
 
 pub fn part_one(input: &str) -> Option<u32> {
     let map: Map = parse_input(&input);
-    println!("{:?}", map);
     let path: HashSet<Vect2D> = collect_path(&map);
     Some(path.len() as u32 / 2)
 }
 
 pub fn part_two(input: &str) -> Option<u32> {
+    let map: Map = parse_input(&input);
+    let path: HashSet<Vect2D> = collect_path(&map);
     None
 }
 
