@@ -85,13 +85,14 @@ pub fn get_total_cards(
     let this_card: Card = card.clone();
     let single_total_card: usize = get_winning_cards(this_card);
     let start_index: usize = starting_number + 1;
+    println!("{} {} {}", starting_number, single_total_card, start_index);
     for i in start_index..=single_total_card + 1 {
         //if i < cards.len() {
         let actual_card: Card = cards[i].clone();
         let temp_card: Card = cards[i].clone();
-        let total_card_copy = total_cards.clone();
+        let mut total_card_copy = total_cards.clone();
         &total_cards.push(temp_card);
-        get_total_cards(&cards, &actual_card, i, &total_card_copy);
+        get_total_cards(&cards, &actual_card, i, &mut total_card_copy);
         //}
     }
 }
@@ -108,13 +109,26 @@ pub fn part_two(input: &str) -> Option<u32> {
     //println!("{:?}", cards);
     //println!("{:?}", cards[1]);
     let mut total_cards: Vec<Card> = Vec::new();
-    get_total_cards(&cards, &cards[0], 0, &total_cards);
+    get_total_cards(&cards, &cards[0], 0, &mut total_cards);
+    println!("{:?}", total_cards);
     Some(total_cards.len() as u32)
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_part_two_example() {
+        let input = "Card 1: 41 48 83 86 17 | 83 86  6 31 17  9 48 53
+Card 2: 13 32 20 16 61 | 61 30 68 82 17 32 24 19
+Card 3:  1 21 53 59 44 | 69 82 63 72 16 21 14  1
+Card 4: 41 92 73 84 69 | 59 84 76 51 58  5 54 83
+Card 5: 87 83 26 28 32 | 88 30 70 12 93 22 82 36
+Card 6: 31 18 13 56 72 | 74 77 10 23 35 67 36 11";
+        let result = part_two(&input);
+        assert_eq!(result, Some(30));
+    }
 
     #[test]
     fn test_part_one() {
